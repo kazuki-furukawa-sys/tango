@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nanshun English Vocabulary Grand Prix</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+  :root {
+    --neon-cyan:   #00f5ff;
+    --neon-yellow: #ffe600;
+    --neon-red:    #ff2244;
+    --neon-green:  #39ff14;
+    --neon-orange: #ff6600;
+    --bg:    #050510;
+    --panel: #0a0a20;
+    --panel2:#10102a;
+    --text:  #e0e8ff;
+    --glow-cyan:   0 0 8px #00f5ff, 0 0 20px #00f5ffaa;
+    --glow-yellow: 0 0 8px #ffe600, 0 0 20px #ffe600aa;
+    --glow-red:    0 0 8px #ff2244, 0 0 30px #ff2244cc;
+    --glow-green:  0 0 8px #39ff14, 0 0 20px #39ff14aa;
+    --glow-orange: 0 0 8px #ff6600, 0 0 20px #ff6600aa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridScroll 20s linear infinite;
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%,  rgba(0,100,255,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 100%, rgba(255,34,68,0.08)  0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+  @keyframes gridScroll { 0%{background-position:0 0} 100%{background-position:40px 40px} }
+
+  #app {
+    position: relative; z-index: 1;
+    max-width: 860px; margin: 0 auto;
+    padding: 16px 16px 40px;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  .header { text-align: center; margin-bottom: 14px; }
+  .header h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.15rem; font-weight: 900; letter-spacing: 2px;
+    color: var(--neon-cyan); text-shadow: var(--glow-cyan);
+    line-height: 1.3;
+  }
+  .header h1 .sub {
+    display: block;
+    font-size: 0.7rem; letter-spacing: 4px;
+    color: var(--neon-yellow); text-shadow: var(--glow-yellow);
+    margin-top: 2px;
+  }
+  .header p {
+    font-size: 0.65rem; color: rgba(180,200,255,0.45);
+    letter-spacing: 2px; margin-top: 3px;
+    font-family: 'Orbitron', monospace;
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem; letter-spacing: 3px;
+    color: var(--neon-cyan); margin-bottom: 8px; opacity: 0.9;
+  }
+
+  /* ── EDITOR SCREEN ── */
+  .editor-input-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .editor-input-row input {
+    background: var(--panel2);
+    border: 1px solid rgba(0,245,255,0.3); border-radius: 6px;
+    padding: 9px 12px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 0.9rem;
+    color: var(--text); outline: none; transition: border-color 0.2s;
+  }
+  .editor-input-row input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 8px rgba(0,245,255,0.18); }
+  .editor-input-row input::placeholder { color: rgba(180,200,255,0.28); font-size: 0.82rem; }
+  #input-en { width: 170px; font-family: 'Orbitron', monospace; letter-spacing: 1px; }
+  #input-ja { flex: 1; }
+
+  .btn-add {
+    background: linear-gradient(135deg, var(--neon-cyan), #0080ff);
+    border: none; border-radius: 6px; padding: 9px 18px;
+    font-family: 'Orbitron', monospace; font-size: 0.75rem; font-weight: 900;
+    letter-spacing: 2px; color: #000; cursor: pointer;
+    white-space: nowrap; transition: all 0.2s;
+    box-shadow: 0 0 10px rgba(0,245,255,0.35);
+  }
+  .btn-add:hover { transform: scale(1.04); box-shadow: 0 0 20px rgba(0,245,255,0.65); }
+
+  .bulk-area-wrap { margin-bottom: 8px; }
+  .bulk-hint { font-size: 0.68rem; color: rgba(180,200,255,0.38); margin-bottom: 5px; }
+  .bulk-hint span { color: var(--neon-cyan); opacity: 0.8; }
+  .bulk-row { display: flex; gap: 8px; }
+  #bulk-input {
+    flex: 1; background: var(--panel2);
+    border: 1px solid rgba(0,245,255,0.18); border-radius: 6px;
+    padding: 7px 11px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 0.82rem;
+    color: var(--text); outline: none; resize: vertical; min-height: 66px;
+  }
+  #bulk-input:focus { border-color: var(--neon-cyan); }
+  #bulk-input::placeholder { color: rgba(180,200,255,0.22); font-size: 0.77rem; }
+  .btn-bulk {
+    background: var(--panel); border: 1px solid rgba(0,245,255,0.28); border-radius: 6px;
+    padding: 7px 12px;
+    font-family: 'Orbitron', monospace; font-size: 0.66rem; font-weight: 700;
+    color: var(--neon-cyan); cursor: pointer; transition: all 0.2s;
+    white-space: nowrap; align-self: flex-start;
+  }
+  .btn-bulk:hover { background: rgba(0,245,255,0.08); border-color: var(--neon-cyan); }
+
+  .wordlist-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .wordlist-count { font-family: 'Orbitron', monospace; font-size: 0.66rem; color: var(--neon-yellow); text-shadow: var(--glow-yellow); letter-spacing: 2px; }
+  .btn-clear-all {
+    background: none; border: 1px solid rgba(255,34,68,0.28); border-radius: 4px;
+    padding: 3px 9px;
+    font-family: 'Orbitron', monospace; font-size: 0.57rem;
+    color: var(--neon-red); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-clear-all:hover { background: rgba(255,34,68,0.09); border-color: var(--neon-red); }
+
+  #word-list {
+    max-height: 160px; overflow-y: auto;
+    border: 1px solid rgba(0,245,255,0.1); border-radius: 8px;
+    background: var(--panel); margin-bottom: 12px;
+    scrollbar-width: thin; scrollbar-color: rgba(0,245,255,0.25) transparent;
+  }
+  #word-list:empty::after {
+    content: '単語を追加してください / Add words above';
+    display: block; text-align: center; padding: 18px;
+    color: rgba(180,200,255,0.22); font-size: 0.78rem;
+  }
+  .word-item {
+    display: flex; align-items: center; padding: 7px 12px;
+    border-bottom: 1px solid rgba(0,245,255,0.05); gap: 8px; transition: background 0.13s;
+  }
+  .word-item:hover { background: rgba(0,245,255,0.035); }
+  .word-item:last-child { border-bottom: none; }
+  .word-item .wi-num { font-family: 'Orbitron', monospace; font-size: 0.56rem; color: rgba(180,200,255,0.28); width: 22px; text-align: right; flex-shrink: 0; }
+  .word-item .wi-en  { font-family: 'Orbitron', monospace; font-size: 0.85rem; color: var(--neon-cyan); width: 120px; flex-shrink: 0; }
+  .word-item .wi-ja  { font-size: 0.78rem; color: rgba(200,215,255,0.65); flex: 1; }
+  .word-item .wi-del { background: none; border: none; color: rgba(255,34,68,0.45); cursor: pointer; font-size: 0.95rem; padding: 0 3px; transition: color 0.13s; flex-shrink: 0; }
+  .word-item .wi-del:hover { color: var(--neon-red); }
+
+  /* ── TIME SETTING ── */
+  .time-setting-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--panel); border: 1px solid rgba(0,245,255,0.18);
+    border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
+  }
+  .time-setting-row label {
+    font-family: 'Orbitron', monospace; font-size: 0.66rem; letter-spacing: 2px;
+    color: rgba(180,200,255,0.6); white-space: nowrap;
+  }
+  .time-spin-group { display: flex; align-items: center; gap: 6px; }
+  .time-spin-group .ts-label {
+    font-family: 'Orbitron', monospace; font-size: 0.6rem; color: rgba(180,200,255,0.45); letter-spacing: 1px;
+  }
+  .time-spin {
+    background: var(--panel2); border: 1px solid rgba(0,245,255,0.28); border-radius: 5px;
+    padding: 6px 4px; width: 52px; text-align: center;
+    font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 700;
+    color: var(--neon-cyan); text-shadow: var(--glow-cyan); outline: none;
+    -moz-appearance: textfield;
+  }
+  .time-spin::-webkit-inner-spin-button,
+  .time-spin::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .time-spin:focus { border-color: var(--neon-cyan); box-shadow: 0 0 8px rgba(0,245,255,0.2); }
+  .time-sep {
+    font-family: 'Orbitron', monospace; font-size: 1.3rem; font-weight: 900;
+    color: rgba(180,200,255,0.4);
+  }
+  .time-preview {
+    margin-left: auto;
+    font-family: 'Orbitron', monospace; font-size: 0.75rem;
+    color: var(--neon-yellow); text-shadow: var(--glow-yellow); letter-spacing: 1px;
+  }
+
+  /* ── MODE TOGGLE ── */
+  .mode-section { display: flex; gap: 10px; margin-bottom: 12px; }
+  .mode-toggle {
+    flex: 1; background: var(--panel); border: 1px solid rgba(0,245,255,0.22); border-radius: 8px;
+    padding: 11px 8px; cursor: pointer; text-align: center; transition: all 0.2s; color: var(--text);
+  }
+  .mode-toggle.sel { border-color: var(--neon-cyan); background: rgba(0,245,255,0.07); box-shadow: 0 0 12px rgba(0,245,255,0.22); }
+  .mode-toggle .mt-icon { font-size: 1.5rem; margin-bottom: 3px; }
+  .mode-toggle .mt-name { font-family: 'Orbitron', monospace; font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; color: var(--neon-cyan); }
+  .mode-toggle .mt-desc { font-size: 0.63rem; color: rgba(200,210,255,0.45); margin-top: 3px; line-height: 1.4; }
+
+  .err-msg { color: var(--neon-red); font-size: 0.72rem; font-family: 'Orbitron', monospace; letter-spacing: 1px; min-height: 17px; margin-bottom: 5px; text-shadow: var(--glow-red); }
+
+  .start-btn {
+    background: linear-gradient(135deg, var(--neon-cyan), #0080ff);
+    border: none; border-radius: 8px; padding: 16px;
+    font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 900;
+    letter-spacing: 3px; color: #000; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 0 18px rgba(0,245,255,0.45); width: 100%;
+  }
+  .start-btn:hover { transform: scale(1.015); box-shadow: 0 0 36px rgba(0,245,255,0.75); }
+
+  .hs-row { display: flex; gap: 8px; justify-content: center; margin-top: 9px; flex-wrap: wrap; }
+  .hs-chip { font-family: 'Orbitron', monospace; font-size: 0.64rem; color: var(--neon-yellow); opacity: 0.65; letter-spacing: 1px; }
+
+  /* ── GAME HUD ── */
+  .game-hud { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .hud-box { background: var(--panel); border: 1px solid rgba(0,245,255,0.18); border-radius: 8px; padding: 9px; text-align: center; }
+  .hud-label { font-family: 'Orbitron', monospace; font-size: 0.55rem; letter-spacing: 2px; color: rgba(180,200,255,0.45); margin-bottom: 3px; }
+  .hud-value { font-family: 'Orbitron', monospace; font-size: 1.45rem; font-weight: 900; }
+  .hud-value.cyan   { color: var(--neon-cyan);   text-shadow: var(--glow-cyan); }
+  .hud-value.yellow { color: var(--neon-yellow);  text-shadow: var(--glow-yellow); }
+  .hud-value.red    { color: var(--neon-red);     text-shadow: var(--glow-red); }
+  .hud-value.green  { color: var(--neon-green);   text-shadow: var(--glow-green); }
+
+  .timer-bar-wrap { height: 5px; background: rgba(255,255,255,0.07); border-radius: 3px; margin-bottom: 12px; overflow: hidden; }
+  .timer-bar { height: 100%; border-radius: 3px; transition: width 0.1s linear, background 0.5s; background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan)); }
+
+  /* ── WORD PANEL ── */
+  .word-panel {
+    background: var(--panel); border: 1px solid rgba(0,245,255,0.22); border-radius: 12px;
+    padding: 18px 22px; text-align: center; margin-bottom: 10px;
+    position: relative; overflow: hidden; min-height: 180px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: text;
+  }
+  .word-panel::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,245,255,0.025), transparent); }
+
+  .mode-badge {
+    position: absolute; top: 9px; right: 10px;
+    font-family: 'Orbitron', monospace; font-size: 0.52rem; letter-spacing: 2px;
+    padding: 3px 7px; border-radius: 10px; font-weight: 700;
+  }
+  .mode-badge.training { background: rgba(0,245,255,0.12); color: var(--neon-cyan); border: 1px solid rgba(0,245,255,0.28); }
+  .mode-badge.blind    { background: rgba(255,102,0,0.12); color: var(--neon-orange); border: 1px solid rgba(255,102,0,0.28); }
+
+  .word-number { font-family: 'Orbitron', monospace; font-size: 0.58rem; color: rgba(180,200,255,0.38); letter-spacing: 2px; margin-bottom: 5px; }
+  .japanese-meaning { font-size: 1.45rem; font-weight: 900; color: var(--neon-yellow); text-shadow: var(--glow-yellow); margin-bottom: 12px; letter-spacing: 2px; line-height: 1.3; }
+
+  /* ── TYPING DISPLAY ── */
+  .typing-display {
+    background: var(--panel2); border: 2px solid rgba(0,245,255,0.28); border-radius: 10px;
+    padding: 12px 18px;
+    font-family: 'Orbitron', monospace; font-size: 1.7rem; font-weight: 700; letter-spacing: 5px;
+    text-align: center; min-height: 60px; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    position: relative;
+  }
+  .typing-display.correct  { border-color: var(--neon-green);  box-shadow: 0 0 16px rgba(57,255,20,0.28); }
+  .typing-display.wrong    { border-color: var(--neon-red);    box-shadow: 0 0 16px rgba(255,34,68,0.38); animation: shake 0.32s; }
+  .typing-display.complete { border-color: var(--neon-yellow); box-shadow: 0 0 28px rgba(255,230,0,0.45); }
+  .typing-display.skipped  { border-color: var(--neon-orange); box-shadow: 0 0 16px rgba(255,102,0,0.3); }
+
+  /* TRAINING mode chars */
+  .char { display: inline-block; }
+  .char.hidden  { color: rgba(200,210,255,0.15); }  /* not yet revealed */
+  .char.next    { color: rgba(180,200,255,0.55); border-bottom: 2px solid rgba(180,200,255,0.4); } /* next to type – just revealed */
+  .char.current { color: #fff; border-bottom: 3px solid var(--neon-cyan); animation: blink 0.6s infinite; }
+  .char.done    { color: var(--neon-green); text-shadow: var(--glow-green); }
+
+  /* BLIND mode progress dots */
+  .blind-progress { font-size: 1.9rem; letter-spacing: 6px; color: rgba(0,245,255,0.45); transition: color 0.13s; user-select: none; }
+
+  /* Enter-to-submit helper for BLIND */
+  .blind-typed-preview {
+    font-family: 'Orbitron', monospace; font-size: 1.3rem; letter-spacing: 4px;
+    color: rgba(0,245,255,0.7);
+  }
+
+  /* result flash overlay inside panel */
+  .result-flash {
+    position: absolute; inset: 0; border-radius: 12px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 10; animation: flashFade 0.55s forwards;
+  }
+  .result-flash.ok   { background: rgba(57,255,20,0.18); }
+  .result-flash.ng   { background: rgba(255,34,68,0.18); }
+  .result-flash.skip { background: rgba(255,102,0,0.15); }
+  .result-flash .rf-icon { font-size: 2.8rem; }
+  .result-flash .rf-word {
+    font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 900;
+    letter-spacing: 3px; margin-top: 4px;
+  }
+  .result-flash.ok   .rf-word { color: var(--neon-green); text-shadow: var(--glow-green); }
+  .result-flash.ng   .rf-word { color: var(--neon-red);   text-shadow: var(--glow-red); }
+  .result-flash.skip .rf-word { color: var(--neon-orange); text-shadow: var(--glow-orange); }
+  @keyframes flashFade { 0%{opacity:1} 70%{opacity:1} 100%{opacity:0} }
+
+  .combo-display { font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--neon-orange); letter-spacing: 2px; height: 18px; margin-top: 7px; text-shadow: var(--glow-orange); }
+
+  /* PASS button */
+  .pass-btn {
+    display: block; margin: 8px auto 0;
+    background: none; border: 1px solid rgba(255,102,0,0.4); border-radius: 6px;
+    padding: 7px 28px;
+    font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700;
+    color: var(--neon-orange); letter-spacing: 2px; cursor: pointer; transition: all 0.2s;
+  }
+  .pass-btn:hover { background: rgba(255,102,0,0.1); border-color: var(--neon-orange); }
+
+  /* BLIND: visible text input */
+  .blind-input-wrap {
+    width: 100%; margin-top: 10px; display: none;
+  }
+  .blind-input-wrap.show { display: block; }
+  .blind-real-input {
+    width: 100%;
+    background: var(--panel2); border: 2px solid rgba(0,245,255,0.28); border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Orbitron', monospace; font-size: 1.4rem; font-weight: 700;
+    letter-spacing: 4px; color: rgba(0,0,0,0);   /* invisible text – we show manually */
+    caret-color: var(--neon-cyan); outline: none; text-align: center;
+    transition: border-color 0.15s;
+  }
+  /* We keep a mirror display on top */
+
+  #hidden-input { position: fixed; opacity: 0; pointer-events: none; left: -9999px; top: 0; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.28} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+  /* score popup */
+  .score-popup {
+    position: fixed; pointer-events: none;
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1.7rem;
+    text-shadow: var(--glow-yellow);
+    animation: floatUp 0.85s forwards; z-index: 999;
+  }
+  @keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-80px) scale(1.3)} }
+
+  .particle { position: fixed; pointer-events: none; width: 5px; height: 5px; border-radius: 50%; animation: pFly 0.65s forwards; z-index: 998; }
+  @keyframes pFly { 0%{opacity:1;transform:translate(0,0) scale(1)} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)} }
+
+  /* ── RESULT SCREEN ── */
+  #result-screen { text-align: center; padding: 8px 0; }
+  .result-title { font-family: 'Orbitron', monospace; font-size: 2.2rem; font-weight: 900; letter-spacing: 4px; margin-bottom: 4px; animation: pulse 1.5s infinite; }
+  .result-title.excellent { color: var(--neon-yellow); text-shadow: var(--glow-yellow); }
+  .result-title.good      { color: var(--neon-green);  text-shadow: var(--glow-green); }
+  .result-title.ok        { color: var(--neon-cyan);   text-shadow: var(--glow-cyan); }
+  .result-title.bad       { color: var(--neon-red);    text-shadow: var(--glow-red); }
+  .result-mode-tag { font-family: 'Orbitron', monospace; font-size: 0.62rem; letter-spacing: 2px; color: rgba(180,200,255,0.48); margin-bottom: 5px; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+  .score-big { font-family: 'Orbitron', monospace; font-size: 3.8rem; font-weight: 900; color: var(--neon-yellow); text-shadow: var(--glow-yellow); margin: 6px 0; }
+
+  .result-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin: 12px 0; }
+  .stat-box { background: var(--panel); border: 1px solid rgba(0,245,255,0.18); border-radius: 8px; padding: 11px 7px; }
+  .stat-label { font-family: 'Orbitron', monospace; font-size: 0.52rem; letter-spacing: 1px; color: rgba(180,200,255,0.38); margin-bottom: 5px; }
+  .stat-val { font-family: 'Orbitron', monospace; font-size: 1.25rem; font-weight: 700; color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+  .stat-val.red { color: var(--neon-red); text-shadow: var(--glow-red); }
+  .stat-val.orange { color: var(--neon-orange); text-shadow: var(--glow-orange); }
+
+  .record-badge { background: linear-gradient(135deg, var(--neon-yellow), var(--neon-orange)); color: #000; font-family: 'Orbitron', monospace; font-weight: 900; font-size: 0.75rem; letter-spacing: 2px; padding: 7px 18px; border-radius: 20px; display: inline-block; margin: 5px 0; animation: pulse 1s infinite; }
+
+  .missed-section { margin-top: 11px; text-align: left; }
+  .missed-title { font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 2px; margin-bottom: 7px; }
+  .missed-list { display: flex; flex-wrap: wrap; gap: 5px; }
+  .missed-item { background: rgba(255,34,68,0.09); border: 1px solid rgba(255,34,68,0.22); border-radius: 5px; padding: 4px 9px; }
+  .missed-item .en { font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--neon-red); }
+  .missed-item .ja { font-size: 0.65rem; color: rgba(200,210,255,0.52); margin-top: 1px; }
+  .skipped-item { background: rgba(255,102,0,0.08); border: 1px solid rgba(255,102,0,0.2); }
+  .skipped-item .en { color: var(--neon-orange); }
+
+  .btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+  .btn-retry {
+    background: linear-gradient(135deg, var(--neon-cyan), #0080ff);
+    border: none; border-radius: 8px; padding: 13px 32px;
+    font-family: 'Orbitron', monospace; font-size: 0.9rem; font-weight: 900; letter-spacing: 3px;
+    color: #000; cursor: pointer; box-shadow: 0 0 18px rgba(0,245,255,0.45); transition: all 0.2s;
+  }
+  .btn-retry:hover { transform: scale(1.05); box-shadow: 0 0 32px rgba(0,245,255,0.75); }
+  .btn-menu {
+    background: transparent; border: 1px solid rgba(0,245,255,0.35); border-radius: 8px;
+    padding: 13px 32px;
+    font-family: 'Orbitron', monospace; font-size: 0.9rem; font-weight: 700; letter-spacing: 3px;
+    color: var(--neon-cyan); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-menu:hover { background: rgba(0,245,255,0.08); border-color: var(--neon-cyan); }
+
+  /* ── COUNTDOWN ── */
+  #countdown-overlay { display: none; position: fixed; inset: 0; background: rgba(5,5,16,0.93); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
+  #countdown-overlay.show { display: flex; }
+  .countdown-num { font-family: 'Orbitron', monospace; font-size: 8rem; font-weight: 900; color: var(--neon-cyan); text-shadow: var(--glow-cyan); animation: countPop 0.8s ease-out; }
+  .countdown-go  { font-family: 'Orbitron', monospace; font-size: 4rem; font-weight: 900; color: var(--neon-yellow); text-shadow: var(--glow-yellow); animation: countPop 0.4s ease-out; }
+  .countdown-label { font-family: 'Orbitron', monospace; font-size: 0.85rem; letter-spacing: 6px; color: rgba(180,200,255,0.45); margin-top: 8px; }
+  @keyframes countPop { 0%{transform:scale(2.2);opacity:0} 60%{opacity:1} 100%{transform:scale(1);opacity:1} }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,245,255,0.25); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── HEADER ── -->
+  <div class="header">
+    <h1>Nanshun English Vocabulary<span class="sub">GRAND PRIX</span></h1>
+    <p>TYPE FAST · TYPE RIGHT · BEAT THE CLOCK</p>
+  </div>
+
+  <!-- ════════════════ EDITOR SCREEN ════════════════ -->
+  <div id="editor-screen" class="screen active">
+
+    <div class="section-label">▶ ADD WORDS</div>
+    <div class="editor-input-row">
+      <input type="text" id="input-en" placeholder="english" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+      <input type="text" id="input-ja" placeholder="日本語の意味">
+      <button class="btn-add" onclick="addWord()">ADD</button>
+    </div>
+
+    <div class="bulk-area-wrap">
+      <div class="bulk-hint">まとめて入力: <span>1行に「英語 日本語」</span>（スペース区切り）</div>
+      <div class="bulk-row">
+        <textarea id="bulk-input" placeholder="enjoy 楽しむ&#10;change 変える&#10;learn 学ぶ"></textarea>
+        <button class="btn-bulk" onclick="bulkAdd()">一括<br>追加</button>
+      </div>
+    </div>
+
+    <div class="wordlist-header">
+      <div class="wordlist-count" id="wl-count">0 WORDS</div>
+      <button class="btn-clear-all" onclick="clearAll()">CLEAR ALL</button>
+    </div>
+    <div id="word-list"></div>
+
+    <!-- TIME SETTING -->
+    <div class="section-label">▶ SET TIME LIMIT</div>
+    <div class="time-setting-row">
+      <label>LIMIT</label>
+      <div class="time-spin-group">
+        <span class="ts-label">MIN</span>
+        <input type="number" class="time-spin" id="time-min" min="0" max="59" value="1">
+        <span class="time-sep">:</span>
+        <span class="ts-label">SEC</span>
+        <input type="number" class="time-spin" id="time-sec" min="0" max="59" value="0">
+      </div>
+      <div class="time-preview" id="time-preview">1:00</div>
+    </div>
+
+    <!-- TYPING MODE -->
+    <div class="section-label">▶ TYPING MODE</div>
+    <div class="mode-section">
+      <div class="mode-toggle sel" id="mt-training" onclick="selectMode('training', this)">
+        <div class="mt-icon">🎓</div>
+        <div class="mt-name">TRAINING</div>
+        <div class="mt-desc">1文字打つたびに次の1文字が表示<br>Enterで確定・判定</div>
+      </div>
+      <div class="mode-toggle" id="mt-blind" onclick="selectMode('blind', this)">
+        <div class="mt-icon">🙈</div>
+        <div class="mt-name">BLIND</div>
+        <div class="mt-desc">文字が見えない状態でタイプ<br>Enterで確定・判定</div>
+      </div>
+    </div>
+
+    <div class="err-msg" id="err-msg"></div>
+    <button class="start-btn" onclick="tryStart()" id="start-btn-el">▶ START GRAND PRIX</button>
+
+    <div class="hs-row">
+      <span class="hs-chip" id="hs-training">TRAINING BEST: —</span>
+      <span class="hs-chip" style="opacity:0.35">｜</span>
+      <span class="hs-chip" id="hs-blind">BLIND BEST: —</span>
+    </div>
+  </div>
+
+  <!-- ════════════════ GAME SCREEN ════════════════ -->
+  <div id="game-screen" class="screen">
+
+    <div class="game-hud">
+      <div class="hud-box">
+        <div class="hud-label">SCORE</div>
+        <div class="hud-value yellow" id="hud-score">0</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">TIME</div>
+        <div class="hud-value cyan"   id="hud-time">1:00</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">CORRECT</div>
+        <div class="hud-value green"  id="hud-correct">0</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">COMBO</div>
+        <div class="hud-value red"    id="hud-combo">×0</div>
+      </div>
+    </div>
+
+    <div class="timer-bar-wrap">
+      <div class="timer-bar" id="timer-bar"></div>
+    </div>
+
+    <div class="word-panel" id="word-panel" onclick="focusInput()">
+      <div class="mode-badge training" id="mode-badge">TRAINING</div>
+      <div class="word-number"       id="word-number">WORD 1</div>
+      <div class="japanese-meaning"  id="japanese-meaning">—</div>
+
+      <div class="typing-display"    id="typing-display">
+        <span id="char-display"></span>
+      </div>
+
+      <div class="combo-display"     id="combo-display"></div>
+    </div>
+
+    <button class="pass-btn" id="pass-btn" onclick="passWord()">PASS (skip / 0点)</button>
+
+    <input type="text" id="hidden-input"
+           autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+  </div>
+
+  <!-- ════════════════ RESULT SCREEN ════════════════ -->
+  <div id="result-screen" class="screen">
+    <div class="result-title"    id="result-title">EXCELLENT!</div>
+    <div class="result-mode-tag" id="result-mode-tag"></div>
+    <div class="score-big"       id="result-score">0</div>
+    <div id="record-badge-wrap"></div>
+
+    <div class="result-stats">
+      <div class="stat-box">
+        <div class="stat-label">CORRECT</div>
+        <div class="stat-val"        id="res-correct">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">WRONG</div>
+        <div class="stat-val red"    id="res-wrong">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">PASSED</div>
+        <div class="stat-val orange" id="res-passed">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">MAX COMBO</div>
+        <div class="stat-val"        id="res-combo">0</div>
+      </div>
+    </div>
+
+    <div class="missed-section">
+      <div class="missed-title" id="missed-title-el" style="color:var(--neon-red)">▸ MISSED / PASSED WORDS</div>
+      <div class="missed-list"  id="missed-list"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-retry" onclick="tryStart()">RETRY</button>
+      <button class="btn-menu"  onclick="showScreen('editor-screen')">EDIT WORDS</button>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<!-- COUNTDOWN -->
+<div id="countdown-overlay">
+  <div id="countdown-content">
+    <div class="countdown-num">3</div>
+    <div class="countdown-label">GET READY</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════
+let words       = [];
+let typingMode  = 'training';   // 'training' | 'blind'
+let totalSecs   = 60;
+
+let highScores = { training: 0, blind: 0 };
+try { highScores = Object.assign({ training:0, blind:0 }, JSON.parse(localStorage.getItem('nanshunGP') || '{}')); } catch(e){}
+function saveHS() { try { localStorage.setItem('nanshunGP', JSON.stringify(highScores)); } catch(e){} }
+
+// ═══════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════
+let queue        = [];
+let currentIdx   = 0;
+let currentInput = '';      // what user has typed so far for current word
+let score        = 0;
+let combo        = 0;
+let maxCombo     = 0;
+let correctCount = 0;
+let wrongCount   = 0;       // words answered wrong (with mistakes)
+let passedCount  = 0;
+let missedWords  = [];      // {en, ja, type:'wrong'|'pass'}
+let gameActive   = false;
+let gameTimer    = null;
+let timeLeft     = 60;      // seconds (float)
+let awaitingJudge = false;  // true when Enter has been pressed, waiting for flash to finish
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+updateHSDisplay();
+renderWordList();
+syncTimePreview();
+
+['time-min','time-sec'].forEach(id => {
+  document.getElementById(id).addEventListener('input', syncTimePreview);
+});
+
+function syncTimePreview() {
+  const m = parseInt(document.getElementById('time-min').value) || 0;
+  const s = parseInt(document.getElementById('time-sec').value) || 0;
+  const tot = m * 60 + s;
+  totalSecs = Math.max(5, Math.min(tot, 3600));
+  document.getElementById('time-preview').textContent = fmtTime(totalSecs);
+}
+
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'editor-screen') { updateHSDisplay(); renderWordList(); }
+}
+
+function updateHSDisplay() {
+  document.getElementById('hs-training').textContent = `TRAINING BEST: ${highScores.training || '—'}`;
+  document.getElementById('hs-blind').textContent    = `BLIND BEST: ${highScores.blind    || '—'}`;
+}
+
+// ═══════════════════════════════════════
+//  WORD MANAGEMENT
+// ═══════════════════════════════════════
+function addWord(enVal, jaVal) {
+  const en = (enVal !== undefined ? enVal : document.getElementById('input-en').value).trim().toLowerCase();
+  const ja = (jaVal !== undefined ? jaVal : document.getElementById('input-ja').value).trim();
+  if (!en || !ja) { showErr('英語と日本語の両方を入力してください'); return false; }
+  if (!/^[a-z][a-z\-']*$/.test(en)) { showErr(`"${en}" — アルファベットのみ (例: enjoy)`); return false; }
+  if (words.find(w => w.en === en)) { showErr(`"${en}" はすでに追加済みです`); return false; }
+  words.push({ en, ja });
+  if (enVal === undefined) {
+    document.getElementById('input-en').value = '';
+    document.getElementById('input-ja').value = '';
+    document.getElementById('input-en').focus();
+  }
+  clearErr();
+  renderWordList();
+  return true;
+}
+
+function bulkAdd() {
+  const raw = document.getElementById('bulk-input').value;
+  let added = 0, skipped = 0;
+  raw.split('\n').map(l => l.trim()).filter(l => l).forEach(line => {
+    const m = line.match(/^([a-zA-Z][a-zA-Z\-']*)\s+(.+)$/);
+    if (!m) { skipped++; return; }
+    const en = m[1].toLowerCase(), ja = m[2].trim();
+    if (words.find(w => w.en === en)) { skipped++; return; }
+    words.push({ en, ja }); added++;
+  });
+  document.getElementById('bulk-input').value = '';
+  if (skipped > 0) showErr(`${added}語追加、${skipped}行スキップ`);
+  else clearErr();
+  renderWordList();
+}
+
+function removeWord(i) { words.splice(i, 1); renderWordList(); }
+
+function clearAll() {
+  if (!words.length) return;
+  if (confirm('全ての単語を削除しますか？')) { words = []; renderWordList(); }
+}
+
+function renderWordList() {
+  const list = document.getElementById('word-list');
+  document.getElementById('wl-count').textContent = `${words.length} WORD${words.length !== 1 ? 'S' : ''}`;
+  list.innerHTML = '';
+  words.forEach((w, i) => {
+    const d = document.createElement('div');
+    d.className = 'word-item';
+    d.innerHTML = `<span class="wi-num">${i+1}</span><span class="wi-en">${h(w.en)}</span><span class="wi-ja">${h(w.ja)}</span><button class="wi-del" onclick="removeWord(${i})">×</button>`;
+    list.appendChild(d);
+  });
+  list.scrollTop = list.scrollHeight;
+}
+
+function h(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showErr(m) { document.getElementById('err-msg').textContent = m; }
+function clearErr()  { document.getElementById('err-msg').textContent = ''; }
+
+document.getElementById('input-en').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('input-ja').focus(); });
+document.getElementById('input-ja').addEventListener('keydown', e => { if(e.key==='Enter') addWord(); });
+
+// ═══════════════════════════════════════
+//  MODE SELECT
+// ═══════════════════════════════════════
+function selectMode(m, el) {
+  typingMode = m;
+  document.querySelectorAll('.mode-toggle').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ═══════════════════════════════════════
+//  START FLOW
+// ═══════════════════════════════════════
+function tryStart() {
+  syncTimePreview();
+  if (words.length < 1) { showErr('単語を最低1語追加してください！'); showScreen('editor-screen'); return; }
+  if (totalSecs < 5) { showErr('制限時間は5秒以上に設定してください'); showScreen('editor-screen'); return; }
+  clearErr();
+  startCountdown();
+}
+
+function startCountdown() {
+  showScreen('game-screen');
+  const ov = document.getElementById('countdown-overlay');
+  const ct = document.getElementById('countdown-content');
+  ov.classList.add('show');
+  let c = 3;
+  ct.innerHTML = `<div class="countdown-num">${c}</div><div class="countdown-label">GET READY</div>`;
+  const iv = setInterval(() => {
+    c--;
+    if (c <= 0) {
+      clearInterval(iv);
+      ct.innerHTML = `<div class="countdown-go">GO!</div>`;
+      setTimeout(() => { ov.classList.remove('show'); startGame(); }, 500);
+    } else {
+      ct.innerHTML = `<div class="countdown-num">${c}</div><div class="countdown-label">GET READY</div>`;
+    }
+  }, 800);
+}
+
+// ═══════════════════════════════════════
+//  GAME
+// ═══════════════════════════════════════
+function startGame() {
+  // Build queue (pad to at least 30 so the game always has words)
+  let pool = [...words];
+  while (pool.length < 30) pool = [...pool, ...words];
+  queue = pool.sort(() => Math.random() - 0.5);
+
+  currentIdx   = 0;
+  currentInput = '';
+  score        = 0;
+  combo        = 0;
+  maxCombo     = 0;
+  correctCount = 0;
+  wrongCount   = 0;
+  passedCount  = 0;
+  missedWords  = [];
+  gameActive   = true;
+  awaitingJudge= false;
+  timeLeft     = totalSecs;
+
+  const badge = document.getElementById('mode-badge');
+  badge.textContent = typingMode === 'blind' ? 'BLIND' : 'TRAINING';
+  badge.className   = 'mode-badge ' + typingMode;
+
+  document.getElementById('hud-score').textContent   = '0';
+  document.getElementById('hud-correct').textContent = '0';
+  document.getElementById('hud-combo').textContent   = '×0';
+  document.getElementById('timer-bar').style.width   = '100%';
+  document.getElementById('timer-bar').style.background = 'linear-gradient(90deg, #39ff14, #00f5ff)';
+
+  renderWord();
+  focusInput();
+  gameTimer = setInterval(tick, 100);
+}
+
+// ── TICK ──
+function tick() {
+  if (!gameActive) return;
+  timeLeft = Math.max(0, timeLeft - 0.1);
+  if (timeLeft <= 0) { endGame(); return; }
+
+  const pct = timeLeft / totalSecs;
+  document.getElementById('hud-time').textContent  = fmtTime(timeLeft);
+  document.getElementById('timer-bar').style.width = (pct * 100) + '%';
+  const bar = document.getElementById('timer-bar');
+  if      (pct < 0.2) bar.style.background = 'linear-gradient(90deg, #ff2244, #ff6600)';
+  else if (pct < 0.5) bar.style.background = 'linear-gradient(90deg, #ff6600, #ffe600)';
+  else                bar.style.background = 'linear-gradient(90deg, #39ff14, #00f5ff)';
+}
+
+// ── RENDER WORD ──
+function currentWord() { return queue[currentIdx % queue.length]; }
+
+function renderWord() {
+  if (!gameActive) return;
+  awaitingJudge = false;
+  currentInput  = '';
+  const w  = currentWord();
+
+  document.getElementById('word-number').textContent      = `WORD ${correctCount + wrongCount + passedCount + 1}`;
+  document.getElementById('japanese-meaning').textContent = w.ja;
+  document.getElementById('typing-display').className     = 'typing-display';
+  document.getElementById('combo-display').textContent    = '';
+
+  const cd = document.getElementById('char-display');
+  cd.innerHTML = '';
+
+  if (typingMode === 'training') {
+    // Only first character shown; rest hidden until revealed by typing
+    for (let i = 0; i < w.en.length; i++) {
+      const sp = document.createElement('span');
+      sp.id        = 'ch-' + i;
+      sp.className = i === 0 ? 'char current' : 'char hidden';
+      sp.textContent = i === 0 ? w.en[i] : '_';
+      cd.appendChild(sp);
+    }
+  } else {
+    // BLIND: underscores for length
+    const sp = document.createElement('span');
+    sp.className    = 'blind-progress';
+    sp.id           = 'blind-prog';
+    sp.textContent  = '_'.repeat(w.en.length);
+    cd.appendChild(sp);
+  }
+
+  focusInput();
+}
+
+// ── INPUT ──
+function focusInput() { document.getElementById('hidden-input').focus(); }
+
+document.getElementById('hidden-input').addEventListener('keydown', e => {
+  if (!gameActive || awaitingJudge) return;
+  if (e.key === 'Tab')       { e.preventDefault(); return; }
+  if (e.key === 'Escape')    { e.preventDefault(); return; }
+  if (e.key === 'Enter')     { e.preventDefault(); judgeWord(); return; }
+  if (e.key === 'Backspace') { e.preventDefault(); handleBackspace(); return; }
+  if (e.key.length !== 1)    return;
+  e.preventDefault();
+  handleChar(e.key.toLowerCase());
+});
+
+function handleChar(ch) {
+  const w   = currentWord().en;
+  const pos = currentInput.length;
+  if (pos >= w.length) return; // already full
+
+  currentInput += ch;
+
+  if (typingMode === 'training') {
+    // Mark current char as typed (styling will be judged on Enter)
+    // Show the typed char in 'current' style (neutral – not yet judged)
+    const sp = document.getElementById('ch-' + pos);
+    if (sp) {
+      sp.textContent = ch;
+      sp.className   = 'char current';
+    }
+    // Reveal NEXT char (if exists) as 'next'
+    if (pos + 1 < w.length) {
+      const nx = document.getElementById('ch-' + (pos + 1));
+      if (nx) {
+        nx.textContent = w[pos + 1];
+        nx.className   = 'char next';
+      }
+    }
+  } else {
+    // BLIND: show filled dots
+    const bp = document.getElementById('blind-prog');
+    if (bp) bp.textContent = '●'.repeat(currentInput.length) + '_'.repeat(w.length - currentInput.length);
+  }
+}
+
+function handleBackspace() {
+  if (currentInput.length === 0) return;
+  const pos = currentInput.length - 1;
+  currentInput = currentInput.slice(0, pos);
+
+  if (typingMode === 'training') {
+    // Restore current char to 'current' with its real letter shown
+    const w = currentWord().en;
+    const sp = document.getElementById('ch-' + pos);
+    if (sp) { sp.textContent = w[pos]; sp.className = 'char current'; }
+    // Hide next char again
+    const nx = document.getElementById('ch-' + (pos + 1));
+    if (nx) { nx.textContent = '_'; nx.className = 'char hidden'; }
+  } else {
+    const w  = currentWord().en;
+    const bp = document.getElementById('blind-prog');
+    if (bp) bp.textContent = '●'.repeat(currentInput.length) + '_'.repeat(w.length - currentInput.length);
+  }
+}
+
+// ── JUDGE on Enter ──
+function judgeWord() {
+  if (awaitingJudge) return;
+  const w       = currentWord().en;
+  const typed   = currentInput.trim();
+  const correct = typed === w;
+
+  awaitingJudge = true;
+
+  if (correct) {
+    onCorrect();
+  } else {
+    onWrong(w);
+  }
+}
+
+function onCorrect() {
+  const w = currentWord();
+  correctCount++;
+  combo++;
+  if (combo > maxCombo) maxCombo = combo;
+
+  const base       = 100;
+  const lenBonus   = w.en.length * 5;
+  const comboBonus = Math.floor(combo * 1.5) * 10;
+  const blindBonus = typingMode === 'blind' ? 50 : 0;
+  const pts        = base + lenBonus + comboBonus + blindBonus;
+  score += pts;
+
+  updateHUD();
+  showScorePopup(pts, combo);
+  fireParticles();
+
+  if (combo >= 3) document.getElementById('combo-display').textContent = `🔥 ${combo} COMBO!`;
+
+  showResultFlash('ok', '✓', w.en);
+  setTimeout(() => { currentIdx++; advanceAntiRepeat(w.en); if (gameActive) renderWord(); }, 600);
+}
+
+function onWrong(correctWord) {
+  wrongCount++;
+  combo = 0;
+  document.getElementById('hud-combo').textContent = '×0';
+  document.getElementById('combo-display').textContent = '';
+
+  missedWords.push({ ...currentWord(), type: 'wrong' });
+  updateHUD();
+
+  // Highlight correct vs typed in TRAINING mode
+  if (typingMode === 'training') {
+    revealCorrectInTraining(correctWord);
+  }
+
+  showResultFlash('ng', '✗', correctWord);
+  setTimeout(() => { currentIdx++; advanceAntiRepeat(correctWord); if (gameActive) renderWord(); }, 900);
+}
+
+function revealCorrectInTraining(correctWord) {
+  // Show each char: green if matched, red if wrong/missing
+  for (let i = 0; i < correctWord.length; i++) {
+    const sp = document.getElementById('ch-' + i);
+    if (!sp) continue;
+    sp.textContent = correctWord[i];
+    if (currentInput[i] === correctWord[i]) {
+      sp.className = 'char done';
+    } else {
+      sp.className = 'char wrong-char';
+      sp.style.color = 'var(--neon-red)';
+      sp.style.textShadow = 'var(--glow-red)';
+    }
+  }
+}
+
+// ── PASS ──
+function passWord() {
+  if (!gameActive || awaitingJudge) return;
+  awaitingJudge = true;
+  passedCount++;
+  combo = 0;
+  document.getElementById('hud-combo').textContent = '×0';
+  document.getElementById('combo-display').textContent = '';
+  missedWords.push({ ...currentWord(), type: 'pass' });
+  updateHUD();
+  showResultFlash('skip', '→', 'PASS');
+  setTimeout(() => { currentIdx++; advanceAntiRepeat(currentWord ? currentWord().en : ''); if (gameActive) renderWord(); }, 600);
+}
+
+function advanceAntiRepeat(lastEn) {
+  if (words.length <= 1) return;
+  const ni = currentIdx % queue.length;
+  if (queue[ni].en === lastEn) {
+    const sw = (ni + 1) % queue.length;
+    [queue[ni], queue[sw]] = [queue[sw], queue[ni]];
+  }
+}
+
+// ── RESULT FLASH (inside word panel) ──
+function showResultFlash(type, icon, wordText) {
+  // Remove any old flash
+  const old = document.getElementById('result-flash-el');
+  if (old) old.remove();
+
+  const panel = document.getElementById('word-panel');
+  const el    = document.createElement('div');
+  el.id        = 'result-flash-el';
+  el.className = `result-flash ${type}`;
+  el.innerHTML = `<div class="rf-icon">${icon}</div><div class="rf-word">${type==='ok'?wordText.toUpperCase():type==='skip'?'SKIPPED':wordText.toUpperCase()}</div>`;
+  panel.appendChild(el);
+  setTimeout(() => el.remove(), 600);
+}
+
+function updateHUD() {
+  document.getElementById('hud-score').textContent   = score;
+  document.getElementById('hud-correct').textContent = correctCount;
+  document.getElementById('hud-combo').textContent   = '×' + combo;
+}
+
+// ── SCORE POPUP ──
+function showScorePopup(pts, cmb) {
+  const el = document.createElement('div');
+  el.className = 'score-popup';
+  el.textContent = `+${pts}`;
+  el.style.color = cmb >= 5 ? '#ff6600' : cmb >= 3 ? '#39ff14' : '#ffe600';
+  el.style.left  = (25 + Math.random() * 50) + '%';
+  el.style.top   = '38%';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 850);
+}
+
+function fireParticles() {
+  const colors = ['#00f5ff','#ffe600','#39ff14','#ff6600'];
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.background = colors[i % 4];
+    p.style.left = (20 + Math.random() * 60) + '%';
+    p.style.top  = '55%';
+    const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 100;
+    p.style.setProperty('--dx', Math.cos(a) * d + 'px');
+    p.style.setProperty('--dy', Math.sin(a) * d + 'px');
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 650);
+  }
+}
+
+// ═══════════════════════════════════════
+//  END
+// ═══════════════════════════════════════
+function endGame() {
+  gameActive = false;
+  clearInterval(gameTimer);
+
+  const isNew = score > (highScores[typingMode] || 0);
+  if (score > 0) { highScores[typingMode] = Math.max(score, highScores[typingMode] || 0); saveHS(); }
+
+  showScreen('result-screen');
+
+  let title = 'KEEP GOING', cls = 'bad';
+  if      (correctCount >= 30) { title = 'LEGENDARY!!'; cls = 'excellent'; }
+  else if (correctCount >= 20) { title = 'EXCELLENT!';  cls = 'excellent'; }
+  else if (correctCount >= 12) { title = 'GREAT!';      cls = 'good'; }
+  else if (correctCount >= 5)  { title = 'NICE TRY!';   cls = 'ok'; }
+
+  document.getElementById('result-title').textContent    = title;
+  document.getElementById('result-title').className      = 'result-title ' + cls;
+  document.getElementById('result-mode-tag').textContent = typingMode === 'blind' ? '🙈 BLIND MODE' : '🎓 TRAINING MODE';
+
+  let disp = 0;
+  const iv = setInterval(() => {
+    disp = Math.min(disp + Math.max(1, Math.ceil(score / 40)), score);
+    document.getElementById('result-score').textContent = disp;
+    if (disp >= score) clearInterval(iv);
+  }, 22);
+
+  document.getElementById('res-correct').textContent = correctCount;
+  document.getElementById('res-wrong').textContent   = wrongCount;
+  document.getElementById('res-passed').textContent  = passedCount;
+  document.getElementById('res-combo').textContent   = maxCombo;
+  document.getElementById('record-badge-wrap').innerHTML = isNew && score > 0 ? '<div class="record-badge">🏆 NEW RECORD!</div>' : '';
+
+  // Missed / passed words
+  const ml = document.getElementById('missed-list');
+  const mt = document.getElementById('missed-title-el');
+  ml.innerHTML = '';
+  const unique = [...new Map(missedWords.map(w => [w.en + w.type, w])).values()];
+
+  if (unique.length === 0) {
+    mt.textContent = '✅ 完璧！ノーミス・ノーパス！';
+    mt.style.color = '#39ff14';
+  } else {
+    mt.textContent = `▸ ミス ${wrongCount}語 ／ パス ${passedCount}語`;
+    mt.style.color = '';
+    unique.forEach(w => {
+      const item = document.createElement('div');
+      item.className = 'missed-item' + (w.type === 'pass' ? ' skipped-item' : '');
+      item.innerHTML = `<div class="en">${h(w.en)}${w.type==='pass'?' (PASS)':''}</div><div class="ja">${h(w.ja)}</div>`;
+      ml.appendChild(item);
+    });
+  }
+}
+
+// ── Global click to keep focus during game ──
+document.addEventListener('click', () => { if (gameActive && !awaitingJudge) focusInput(); });
+document.getElementById('word-panel').addEventListener('click', e => {
+  e.stopPropagation();
+  if (gameActive && !awaitingJudge) focusInput();
+});
+</script>
+</body>
+</html>
